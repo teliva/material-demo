@@ -5,12 +5,12 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 const fLoader = new FontLoader();
 
 const addSampleGeometry = (matO,  offsetX = 0, offsetZ = 0, scene) => {
-    const geometry = new THREE.BoxGeometry(6, 6, 6);
+    const geometry = new THREE.BoxGeometry(18, 18, 18);
 
     var material = new THREE.MeshStandardMaterial({
         metalness: matO.metallic,
         roughness: matO.roughness,
-        color: 0xb3b3b3
+        color: 0xcccccc
     });
 
     if (matO.alpha) {
@@ -43,13 +43,35 @@ const addSampleGeometry = (matO,  offsetX = 0, offsetZ = 0, scene) => {
 
 const addBackdrop = (scene) => {
     const geometry = new THREE.PlaneGeometry(400, 200);
-    const material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
-    const plane = new THREE.Mesh(geometry, material);
+    const geometryB = new THREE.PlaneGeometry(400, 200);
+    const geometryS = new THREE.PlaneGeometry(200, 200);
 
-    plane.rotateX(Math.PI / 180 * 90);
-    plane.position.set(100, -3.1, 20);
+    const material = new THREE.MeshBasicMaterial({ color: 0xe6e6e6, side: THREE.DoubleSide });
 
-    scene.add(plane);
+    const tLoader = new THREE.TextureLoader();
+    const texture = tLoader.load('/material-demo/tiletexture.png');
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(20, 10);
+    const materialH = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+
+    const planeH = new THREE.Mesh(geometry, materialH);
+    const planeB = new THREE.Mesh(geometryB, material);
+    const planeS = new THREE.Mesh(geometryS, material);
+
+    //floor
+    planeH.rotateX(Math.PI / 180 * 90);
+    planeH.position.set(100, 0, 20);
+
+    //back
+    planeB.position.set(100, 100, -80);
+
+    //side
+    planeS.rotateY(Math.PI / 180 * 90);
+    planeS.position.set(-100, 100, 20);
+
+    scene.add(planeH);
+    scene.add(planeB);
+    scene.add(planeS);
 };
 
 
