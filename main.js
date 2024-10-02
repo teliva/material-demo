@@ -24,7 +24,6 @@ const onWindowResize = () => {
 const init = () => {
     const container = document.createElement('div');
     document.body.appendChild(container);
-
     scene = new THREE.Scene();
 
     new RGBELoader()    
@@ -41,8 +40,6 @@ const init = () => {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1;
 
-    
-
     container.appendChild(renderer.domElement);
     initializeCamera();
     addLights(scene);
@@ -58,7 +55,6 @@ const init = () => {
     addGeometriesToScene(materialParams, scene);
     render();
 };
-
 
 const addLights = (scene) => {
     cameraLight = new THREE.DirectionalLight(0xffffff, 0.3);
