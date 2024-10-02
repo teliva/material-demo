@@ -4,14 +4,27 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
 const fLoader = new FontLoader();
 
-const addSampleGeometry = (matO,  offsetX = 0, offsetZ = 0, scene) => {
+const addSampleGeometry = (matO, offsetX = 0, offsetZ = 0, scene) => {
     const geometry = new THREE.BoxGeometry(18, 18, 18);
-
-    var material = new THREE.MeshStandardMaterial({
-        metalness: matO.metallic,
-        roughness: matO.roughness,
-        color: 0xcccccc
-    });
+    const tLoader = new THREE.TextureLoader();
+    
+    let material;
+    if (matO.texture) {
+        const texture = tLoader.load(`../material-demo/${matO.texture}`);
+        material = new THREE.MeshStandardMaterial({
+            metalness: matO.metallic,
+            roughness: matO.roughness,
+            map: texture,
+            side: THREE.DoubleSide
+        });
+    }
+    else {
+        material = new THREE.MeshStandardMaterial({
+            metalness: matO.metallic,
+            roughness: matO.roughness,
+            color: 0xcccccc
+        });
+    }
 
     if (matO.alpha) {
         material.transparent = true;
@@ -19,16 +32,16 @@ const addSampleGeometry = (matO,  offsetX = 0, offsetZ = 0, scene) => {
     }
 
     const cube = new THREE.Mesh(geometry, material);
-    cube.position.set(0 + offsetX, 0, offsetZ);
+    cube.position.set(0 + offsetX, 10, offsetZ);
     scene.add(cube);
 
     //FONT
     fLoader.load('https://threejsfundamentals.org/threejs/resources/threejs/fonts/helvetiker_regular.typeface.json', function (font) {
         const textObj = new TextGeometry(`${matO.matText} M:${matO.metallic}, R:${matO.roughness}`, {
             font: font,
-            size: 2,
-            height: 1,
-            depth: 0.5
+            size: 1,
+            height: 0.5,
+            depth: 0.25
         });
 
         const material = new THREE.MeshBasicMaterial({ color: 0x000000 });
@@ -36,7 +49,7 @@ const addSampleGeometry = (matO,  offsetX = 0, offsetZ = 0, scene) => {
         const mesh = new THREE.Mesh(textObj, material);
         mesh.translateZ(10 + offsetZ);
         mesh.translateX(offsetX - 20);
-        mesh.translateY(-2);
+        mesh.translateY(10);
         scene.add(mesh);
     });
 };
@@ -49,7 +62,7 @@ const addBackdrop = (scene) => {
     const material = new THREE.MeshBasicMaterial({ color: 0xe6e6e6, side: THREE.DoubleSide });
 
     const tLoader = new THREE.TextureLoader();
-    const texture = tLoader.load('/material-demo/tiletexture.png');
+    const texture = tLoader.load('../material-demo/tiletexture.png');
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(20, 10);
     const materialH = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
@@ -81,7 +94,7 @@ const addGeometriesToScene = (mats, scene) => {
             addSampleGeometry(mat, inx * 50, 0, scene);
         }
         else {
-            addSampleGeometry(mat, (inx-5)*50, 50, scene);
+            addSampleGeometry(mat, (inx - 5) * 50, 50, scene);
         }
     });
 };

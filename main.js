@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
@@ -6,9 +5,13 @@ import { addGeometriesToScene, addBackdrop } from './add-geometry.js';
 import { materialParams } from './material-params.js';
 
 let camera, scene, renderer;
+let cameraLight;
+let shadowLight;
 
 const render = () => {
     renderer.render(scene, camera);
+    cameraLight.position.copy(camera.position);
+
 };
 
 const onWindowResize = () => {
@@ -22,16 +25,12 @@ const init = () => {
     const container = document.createElement('div');
     document.body.appendChild(container);
 
-
     scene = new THREE.Scene();
 
-    new RGBELoader()
-        .setPath('/material-demo/')
+    new RGBELoader()    
+        .setPath('../material-demo/')
         .load('mall_parking_lot_4k.hdr', function (texture) {
-
             texture.mapping = THREE.EquirectangularReflectionMapping;
-
-            /*scene.background = new THREE.Color(0xF9F9F9);*/
             scene.environment = texture;
             render();
         });
@@ -42,8 +41,11 @@ const init = () => {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1;
 
+    
+
     container.appendChild(renderer.domElement);
     initializeCamera();
+    addLights(scene);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.addEventListener('change', render); // use if there is no animation loop
@@ -55,6 +57,26 @@ const init = () => {
     addBackdrop(scene);
     addGeometriesToScene(materialParams, scene);
     render();
+};
+
+
+const addLights = (scene) => {
+    cameraLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    cameraLight.name = "CameraLight";
+    scene.add(cameraLight);
+
+    var ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    scene.add(ambientLight);
+
+    shadowLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    shadowLight.position.set(-48, 32, 64);
+
+    shadowLight.castShadow = true;
+    shadowLight.name = "ShadowLight";
+
+    shadowLight.shadow.mapSize.set(2048, 2048);
+
+    shadowLight.shadow.bias = 1E-4;
 };
 
 const initializeCamera = () => {
