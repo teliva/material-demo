@@ -59,24 +59,27 @@ const addBackdrop = (scene) => {
     const geometryB = new THREE.PlaneGeometry(400, 200);
     const geometryS = new THREE.PlaneGeometry(200, 200);
 
-    const material = new THREE.MeshBasicMaterial({ color: 0xe6e6e6, side: THREE.DoubleSide });
+    const material = new THREE.MeshStandardMaterial({ color: 0xe6e6e6, side: THREE.DoubleSide });
 
     const tLoader = new THREE.TextureLoader();
     const texture = tLoader.load('../material-demo/tiletexture.png');
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(20, 10);
-    const materialH = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+    const materialH = new THREE.MeshStandardMaterial({ map: texture, side: THREE.DoubleSide });
 
-    const planeH = new THREE.Mesh(geometry, materialH);
+    const planeH = new THREE.Mesh(geometry, material);
     const planeB = new THREE.Mesh(geometryB, material);
     const planeS = new THREE.Mesh(geometryS, material);
 
     //floor
     planeH.rotateX(Math.PI / 180 * 90);
     planeH.position.set(100, 0, 20);
+    planeH.name = 'floor';
+    planeH.receiveShadow = true;
 
     //back
     planeB.position.set(100, 100, -80);
+    planeB.receiveShadow = true;
 
     //side
     planeS.rotateY(Math.PI / 180 * 90);
