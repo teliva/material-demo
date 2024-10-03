@@ -59,7 +59,7 @@ const addBackdrop = (scene) => {
     const geometryB = new THREE.PlaneGeometry(400, 200);
     const geometryS = new THREE.PlaneGeometry(200, 200);
 
-    const material = new THREE.MeshStandardMaterial({ color: 0xe6e6e6, side: THREE.DoubleSide });
+    const material = new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide });
 
     const tLoader = new THREE.TextureLoader();
     const texture = tLoader.load('../material-demo/tiletexture.png');

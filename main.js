@@ -7,6 +7,8 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
+import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
 
 let camera, scene, renderer;
 let cameraLight;
@@ -88,36 +90,14 @@ const animate = () => {
 };
 
 const addLights = (scene) => {
-    cameraLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    cameraLight = new THREE.DirectionalLight(0xffffff, 1);
     cameraLight.name = "CameraLight";
-    scene.add(cameraLight);
+    //scene.add(cameraLight);
 
-    var ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
-    scene.add(ambientLight);
+    var ambientLight = new THREE.AmbientLight(0xffffff, 1);
+    //scene.add(ambientLight);
 
     createShadowLight();
-
-    // shadowLight = new THREE.DirectionalLight(0xffffff, 1.0);
-    // shadowLight.position.set(-24, 26, 36);
-
-    // shadowLight.castShadow = true;
-    // shadowLight.name = "ShadowLight";
-
-    // shadowLight.shadow.camera.top = 100;
-    // shadowLight.shadow.camera.bottom = - 100;
-    // shadowLight.shadow.camera.left = - 100;
-    // shadowLight.shadow.camera.right = 100;
-    // shadowLight.shadow.camera.near = 1;
-    // shadowLight.shadow.camera.far = 100;
-
-    // shadowLight.shadow.mapSize.set(4096, 4096);
-
-    // shadowLight.shadow.bias = 1E-4;
-
-    // helper = new THREE.DirectionalLightHelper(shadowLight, 5, 0);
-    // scene.add(helper);
-
-    // scene.add(shadowLight);
 };
 
 const initializeCamera = () => {
@@ -126,17 +106,21 @@ const initializeCamera = () => {
 };
 
 const createShadowLight = () => {
-    var light = new THREE.DirectionalLight(0xFFFFFF, 1.25);
-    light.position.set(320, 400, 425);
-    light.target.position.set(20, 20, 20);
+    let light = new THREE.DirectionalLight(0xFFFFFF, 1.25);
+    light.position.set(40, 40, 40);
+    light.target.position.set(10, -10, -10);
     light.shadow.camera.top = 2000;
-    light.shadow.camera.bottom = - 2000;
-    light.shadow.camera.left = - 2000;
-    light.shadow.camera.right = 2000;
+    light.shadow.camera.bottom = - 100;
+    light.shadow.camera.left = - 100;
+    light.shadow.camera.right = 100;
     light.shadow.camera.near = 1;
-    light.shadow.camera.far = 2000;
+    light.shadow.camera.far = 100;
     light.castShadow = true;
+    
     scene.add(light);
+
+    let helper = new THREE.DirectionalLightHelper(light, 2000, 0);
+    scene.add(helper);
 };
 
 init();
