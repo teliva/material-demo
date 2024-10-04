@@ -14,12 +14,36 @@ let camera, scene, renderer;
 let cameraLight;
 let composer;
 
+const PLANE_WIDTH = 2.5;
+const PLANE_HEIGHT = 2.5;
+const CAMERA_HEIGHT = 0.3;
+
+let shadowGroup, renderTarget, renderTargetBlur, shadowCamera, cameraHelper, depthMaterial, horizontalBlurMaterial, verticalBlurMaterial;
+let plane, blurPlane, fillPlane;
+
+const state = {
+    shadow: {
+        blur: 3.5,
+        darkness: 1,
+        opacity: 1,
+    },
+    plane: {
+        color: '#ffffff',
+        opacity: 1,
+    },
+    showWireframe: false,
+};
 
 const render = () => {
     renderer.render(scene, camera);
     composer.render();
     cameraLight.position.copy(camera.position);
 };
+
+const geometries = [
+    new THREE.BoxGeometry( 0.4, 0.4, 0.4 ),
+    new THREE.IcosahedronGeometry( 0.3 )
+];
 
 const onWindowResize = () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -43,11 +67,40 @@ const init = () => {
 
     //renderer 
     renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1;
     renderer.setAnimationLoop( animate );
+
+
+    //renderTarget
+    renderTarget = new THREE.WebGLRenderTarget( 512, 512);
+    renderTarget.texture.generateMipmaps = false;
+
+    //renderTargetBlur
+    renderTargetBlur = new THREE.WebGL3DRenderTarget( 512, 512 );
+    renderTargetBlur.texture.generateMipmaps = false;
+
+    //faceup plane
+    const planeGeometry = new THREE.PlaneGeometry( PLANE_WIDTH, PLANE_HEIGHT).rotateX( MATH.PI/2);
+    const planeMaterial = new THREE.MeshBasicMaterial ( { 
+        map: renderTarget.texture,
+        opacity: state.shadow.opacity,
+        transparent: true,
+        depthWrite: false
+    });
+    plane = new THREE.mesh( planeGeometry, planeMaterial );
+    plane.renderOrder = 1;
+
+
+    plane.scale.y = -1;
+
+
+
+
 
     container.appendChild(renderer.domElement);
     initializeCamera();
@@ -75,13 +128,6 @@ const init = () => {
     composer.addPass( outputPass );
     
     render();
-
-    scene.traverse(function (o) {
-        if (o.isMesh) {
-            o.receiveShadow = true;
-            o.castShadow = true;
-        }
-    });
 };
 
 
@@ -90,7 +136,7 @@ const animate = () => {
 };
 
 const addLights = (scene) => {
-    cameraLight = new THREE.DirectionalLight(0xffffff, 1);
+    cameraLight = new THREE.DirectionalLight(0xffffff, 0.3);
     cameraLight.name = "CameraLight";
     //scene.add(cameraLight);
 
@@ -107,9 +153,10 @@ const initializeCamera = () => {
 
 const createShadowLight = () => {
     let light = new THREE.DirectionalLight(0xFFFFFF, 1.25);
+    
     light.position.set(40, 40, 40);
     light.target.position.set(10, -10, -10);
-    light.shadow.camera.top = 2000;
+    light.shadow.camera.top = 100;
     light.shadow.camera.bottom = - 100;
     light.shadow.camera.left = - 100;
     light.shadow.camera.right = 100;

@@ -33,6 +33,7 @@ const addSampleGeometry = (matO, offsetX = 0, offsetZ = 0, scene) => {
 
     const cube = new THREE.Mesh(geometry, material);
     cube.position.set(0 + offsetX, 10, offsetZ);
+    cube.castShadow = true;
     scene.add(cube);
 
     //FONT
