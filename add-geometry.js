@@ -56,6 +56,7 @@ const addSampleGeometry = (matO, offsetX = 0, offsetZ = 0, scene) => {
 };
 
 const addBackdrop = (scene) => {
+    const tankGroup = new THREE.Group();
     const geometry = new THREE.PlaneGeometry(400, 200);
     const geometryB = new THREE.PlaneGeometry(400, 200);
     const geometryS = new THREE.PlaneGeometry(200, 200);
@@ -86,9 +87,11 @@ const addBackdrop = (scene) => {
     planeS.rotateY(Math.PI / 180 * 90);
     planeS.position.set(-100, 100, 20);
 
-    scene.add(planeH);
-    scene.add(planeB);
-    scene.add(planeS);
+    tankGroup.add(planeH);
+    tankGroup.add(planeB);
+    tankGroup.add(planeS);
+
+    scene.add(tankGroup);
 };
 
 
